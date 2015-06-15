@@ -16,12 +16,22 @@ import (
 var dirname = flag.String("dir", "/usr/local/google/home/jbuberel/gometrics", "The directory where the file will be written")
 var	since = flag.String("since", time.Now().Add(-47*time.Hour).Format("2006-01-02"), "The start date of the search window, in YYYY-MM-DD format.")
 var	until = flag.String("until", time.Now().Add(-23*time.Hour).Format("2006-01-02"), "The end date of the search window, in YYYY-MM-DD format.")
+
+var clsToggle = flag.Bool("cls", true, "Set to false to disable Gerrit CLs capture")
+var githubToggle = flag.Bool("github", true, "set to false to disable capture of Github stats")
+var issuesToggle = flag.Bool("issues", true, "set to false to disable capture of Go issues")
+var redditToggle = flag.Bool("reddit", true, "set to false to disable capture of reddit data")
+var twitterToggle = flag.Bool("twitter", true, "set to false to disable capture of twitter data")
+
 var twitterConsumerKey string = ""
 var twitterConsumerSecret string = ""
 var twitterAccessToken string = ""
 var twitterSecretToken string = ""
 var githubClientId = ""
 var githubSecretKey = ""
+var githubAccessToken = "098d68345a9b7244542d7c84e1cba94280a820fa"
+
+
 
 
 func init() {
@@ -70,10 +80,20 @@ func init() {
 func main() {
 	log.Printf("Saving data to directory: %v\n", *dirname)
 	log.Println("Starting gometrics capture")
-	r.Capture(dirname)
-	t.Capture(dirname, since, until, twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterSecretToken)
-	g.Capture(dirname, githubClientId, githubSecretKey)
-	cls.Capture(dirname)
-	iss.Capture(dirname, githubClientId, githubSecretKey)
+	if *redditToggle {
+		r.Capture(dirname)
+	}
+	if *twitterToggle {
+		t.Capture(dirname, since, until, twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterSecretToken)
+	}
+	if *githubToggle {
+		g.Capture(dirname, githubClientId, githubSecretKey)
+	}
+	if *clsToggle {
+		cls.Capture(dirname)
+	}
+	if *issuesToggle {
+		iss.Capture(dirname, githubClientId, githubSecretKey)
+	}
 	log.Println("gometrics capture complete")
 }
