@@ -29,7 +29,7 @@ var twitterAccessToken string = ""
 var twitterSecretToken string = ""
 var githubClientId = ""
 var githubSecretKey = ""
-var githubAccessToken = "098d68345a9b7244542d7c84e1cba94280a820fa"
+var githubSecretToken = ""
 
 
 
@@ -60,6 +60,9 @@ func init() {
 			} else if parts[0] == "github_secret_key" {
 				githubSecretKey = string(parts[1])
 				log.Printf("github_secret_key set from environ to: %v\n", githubSecretKey)
+			} else if parts[0] == "github_secret_token" {
+				githubSecretToken = string(parts[1])
+				log.Printf("github_secret_key set from environ to: %v\n", githubSecretToken)
 			}
 		}
 		
@@ -69,7 +72,7 @@ func init() {
 		log.Println("Unable to obtain twitter keys from environment variables!!")	
 		os.Exit(1)
 	}
-	if len(githubClientId)  == 0 || len(githubSecretKey) == 0  {
+	if len(githubClientId)  == 0 || len(githubSecretKey) == 0 || len(githubSecretToken) == 0 {
 		log.Println("Unable to obtain github keys from environment variables!!")	
 		os.Exit(1)
 	}
@@ -87,13 +90,13 @@ func main() {
 		t.Capture(dirname, since, until, twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterSecretToken)
 	}
 	if *githubToggle {
-		g.Capture(dirname, githubClientId, githubSecretKey)
+		g.Capture(dirname, githubClientId, githubSecretKey, githubSecretToken)
 	}
 	if *clsToggle {
 		cls.Capture(dirname)
 	}
 	if *issuesToggle {
-		iss.Capture(dirname, githubClientId, githubSecretKey)
+		iss.Capture(dirname, githubClientId, githubSecretKey, githubSecretToken)
 	}
 	log.Println("gometrics capture complete")
 }

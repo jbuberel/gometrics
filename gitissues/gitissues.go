@@ -29,7 +29,7 @@ type GithubRepo struct {
 
 var searchUrl = "https://api.github.com/repos/golang/go/issues?"
 
-func getResults() []GithubSearchResult {
+func getResults(githubSecretToken string) []GithubSearchResult {
 	var results []GithubSearchResult = make([]GithubSearchResult, 0)
 	found := false
 	for page := 1; page == 1 || found; page++ {
@@ -37,15 +37,15 @@ func getResults() []GithubSearchResult {
 		log.Printf("Searching for URL: %v\n", search)
 		found = false
 		time.Sleep(5 * time.Second)
-		
+
 		client := &http.Client{}
-		
+
 		req, err := http.NewRequest("GET", string(search), nil)
 		if err != nil {
 			log.Println("Unable to create HTTP request", err)
 			return results
 		}
-		req.SetBasicAuth("jbuberel", "098d68345a9b7244542d7c84e1cba94280a820fa")		
+		req.SetBasicAuth("jbuberel", githubSecretToken)
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Printf("Unable to retrieve %v\n", search)
@@ -73,9 +73,9 @@ func getResults() []GithubSearchResult {
 	return results
 }
 
-func Capture(dirname *string, githubClientId, githubSecretKey string) {
+func Capture(dirname *string, githubClientId, githubSecretKey string, githubSecretToken string) {
 	timestamp := time.Now().Format("2006-01-02")
-	searchResults := getResults()
+	searchResults := getResults(githubSecretToken)
 	outfile := fmt.Sprintf("%v/github-issues-%v.csv", *dirname, timestamp)
 	log.Printf("Saving results to file %v\n", outfile)
 	f, err := os.Create(outfile)

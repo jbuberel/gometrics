@@ -74,7 +74,7 @@ func getForked() []*GithubSearchResult  {
 
 }
 
-func Capture(dirname *string, githubClientId, githubSecretKey string) {
+func Capture(dirname *string, githubClientId, githubSecretKey string, githubSecretToken string) {
 	timestamp := time.Now().Format("2006-01-02")
 	searchResults := getStarred()
 	outfile := fmt.Sprintf("%v/github-starred-%v.csv", *dirname, timestamp)
