@@ -27,16 +27,17 @@ type GithubSearchResult struct {
 type GithubRepo struct {
 }
 
-var searchUrl = "https://api.github.com/repos/golang/go/issues?"
+var searchUrl = "https://api.github.com/repos/golang/go/issues?state=open"
 
 func getResults(githubSecretToken string) []GithubSearchResult {
 	var results []GithubSearchResult = make([]GithubSearchResult, 0)
 	found := false
+//        for page := 1; page < 5; page++ {
 	for page := 1; page == 1 || found; page++ {
 		search := searchUrl + fmt.Sprintf("&page=%v", page)
 		log.Printf("Searching for URL: %v\n", search)
 		found = false
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 
 		client := &http.Client{}
 
@@ -64,7 +65,7 @@ func getResults(githubSecretToken string) []GithubSearchResult {
 		}
 		results = append(results, result...)
 		for _, issue := range result {
-			log.Printf("  repo: %v - %v\n", issue.Id, issue.Title)
+			log.Printf("  issue: %v - %v - %v\n", issue.Id, issue.Milestone.Title, issue.Title)
 			found = true
 		}
 
@@ -85,15 +86,14 @@ func Capture(dirname *string, githubClientId, githubSecretKey string, githubSecr
 	defer f.Close()
 
 	total := 0
-	issuesByState := make(map[string]int)
+	issuesByMilestone := make(map[string]int)
 	for _, issue := range searchResults {
 		log.Printf("%v - %v - %v\n", issue.Id, issue.Milestone.Title, issue.Title)
-		if issue.Milestone.Title == "Unplanned" || issue.Milestone.Title == "Unreleased" {
-			continue
-		}
 		total += 1
-		issuesByState[issue.State] += 1
+		issuesByMilestone[issue.Milestone.Title] += 1
 	}
-	f.WriteString(fmt.Sprintf("%v,%v,%v,%v\n", timestamp, total, issuesByState["open"], issuesByState["closed"]))
 
+	for m := range issuesByMilestone {
+		f.WriteString(fmt.Sprintf("%v,%v,%v,%v\n", timestamp, total, m, issuesByMilestone[m]))
+	}
 }
