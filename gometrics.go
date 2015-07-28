@@ -7,6 +7,7 @@ import (
 	iss "github.com/jbuberel/gometrics/gitissues"
 	r "github.com/jbuberel/gometrics/reddit"
 	t "github.com/jbuberel/gometrics/twitter"
+	mobile "github.com/jbuberel/gometrics/mobile"
 	"log"
 	"os"
 	"strings"
@@ -22,6 +23,7 @@ var githubToggle = flag.Bool("github", true, "set to false to disable capture of
 var issuesToggle = flag.Bool("issues", true, "set to false to disable capture of Go issues")
 var redditToggle = flag.Bool("reddit", true, "set to false to disable capture of reddit data")
 var twitterToggle = flag.Bool("twitter", true, "set to false to disable capture of twitter data")
+var mobileToggle = flag.Bool("mobile", true, "set to false to disable capture of mobile import data")
 
 var twitterConsumerKey string = ""
 var twitterConsumerSecret string = ""
@@ -93,6 +95,9 @@ func main() {
 	}
 	if *issuesToggle {
 		iss.Capture(dirname, githubClientId, githubSecretKey, githubSecretToken)
+	}
+	if *mobileToggle {
+		mobile.Capture(dirname)
 	}
 	log.Println("gometrics capture complete")
 }
