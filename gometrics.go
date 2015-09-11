@@ -2,16 +2,18 @@ package main
 
 import (
 	"flag"
-	cls "github.com/jbuberel/gometrics/gerritcls"
-	g "github.com/jbuberel/gometrics/github"
-	iss "github.com/jbuberel/gometrics/gitissues"
-	r "github.com/jbuberel/gometrics/reddit"
-	t "github.com/jbuberel/gometrics/twitter"
-	mobile "github.com/jbuberel/gometrics/mobile"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	cls "github.com/jbuberel/gometrics/gerritcls"
+	g "github.com/jbuberel/gometrics/github"
+	iss "github.com/jbuberel/gometrics/gitissues"
+	mobile "github.com/jbuberel/gometrics/mobile"
+	r "github.com/jbuberel/gometrics/reddit"
+	t "github.com/jbuberel/gometrics/twitter"
+	tw "github.com/jbuberel/gometrics/twittermobile"
 )
 
 var dirname = flag.String("dir", "/usr/local/google/home/jbuberel/gometrics", "The directory where the file will be written")
@@ -24,14 +26,15 @@ var issuesToggle = flag.Bool("issues", true, "set to false to disable capture of
 var redditToggle = flag.Bool("reddit", true, "set to false to disable capture of reddit data")
 var twitterToggle = flag.Bool("twitter", true, "set to false to disable capture of twitter data")
 var mobileToggle = flag.Bool("mobile", true, "set to false to disable capture of mobile import data")
+var twittermobileToggle = flag.Bool("twittermobile", true, "set to false to disable capture of #golang #mobile data")
 
-var twitterConsumerKey string = ""
-var twitterConsumerSecret string = ""
-var twitterAccessToken string = ""
-var twitterSecretToken string = ""
-var githubClientId = ""
-var githubSecretKey = ""
-var githubSecretToken = ""
+var twitterConsumerKey string
+var twitterConsumerSecret string
+var twitterAccessToken string
+var twitterSecretToken string
+var githubClientId string
+var githubSecretKey string
+var githubSecretToken string
 
 func init() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
@@ -98,6 +101,9 @@ func main() {
 	}
 	if *mobileToggle {
 		mobile.Capture(dirname)
+	}
+	if *twittermobileToggle {
+		tw.Capture(dirname, since, until, twitterConsumerKey, twitterConsumerSecret, twitterAccessToken, twitterSecretToken)
 	}
 	log.Println("gometrics capture complete")
 }
